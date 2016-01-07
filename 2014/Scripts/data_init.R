@@ -1,0 +1,8 @@
+library(XLConnect)
+library(magrittr)
+library(dplyr)
+library(ggplot2)
+db1 <- loadWorkbook("2014/Data/WB_Spring_DietAnalysis_2014.xlsx")
+db2 <- loadWorkbook("2014/Data/WB_Fall_DietAnalysis_2014.xlsx")
+db3 <- loadWorkbook("Additional Data/WB_Historical_Percent_Occurrence.xlsx")
+db4 <- loadWorkbook("Additional Data/lake_erie_western_basin_shoreline.xlsx")
