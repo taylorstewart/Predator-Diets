@@ -1,5 +1,5 @@
 ## Load Data
-source("2015/Scripts/data_init.R")
+source("2015/Scripts/Perch/data_init.R")
 
 ## -----------------------------------------------------------
 ## Filter data and remove duplicates, leaving only unique Fish IDs.
@@ -100,7 +100,9 @@ ggplot(data=filter(wb_shore,piece=="1" & group=="3.1"),aes(long,lat)) +
   geom_polygon(data=filter(wb_shore,piece=="4"),aes(long,lat),fill="white",colour="black") +
   geom_polygon(data=filter(wb_shore,piece=="5"),aes(long,lat),fill="white",colour="black") +
   geom_polygon(data=filter(wb_shore,piece=="6"),aes(long,lat),fill="white",colour="black") +
-  geom_point(data=final_comb,aes(long_st,lat_st,size=Percent*0.9),fill="gray35",
+  geom_point(data=filter(final_comb,season=="Autumn"),aes(long_st,lat_st,size=Percent*0.9),fill="gray70",
+             colour="black",pch=21,stroke=0.8) +
+  geom_point(data=filter(final_comb,season=="Spring"),aes(long_st,lat_st,size=Percent*0.9),fill="Black",
              colour="black",pch=21,stroke=0.8) +
   scale_size_continuous(name="Percent",limits=c(0,100),breaks=c(0,20,40,60,80,100)) +
   xlim(-83.514,-82.12) +

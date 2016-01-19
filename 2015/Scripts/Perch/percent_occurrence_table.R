@@ -1,5 +1,5 @@
 ## Load Data
-source("2015/Scripts/data_init.R")
+source("2015/Scripts/Perch/data_init.R")
 
 ## -----------------------------------------------------------
 ## Remove stomachs with no diet contents

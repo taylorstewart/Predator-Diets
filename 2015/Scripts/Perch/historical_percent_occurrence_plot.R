@@ -1,5 +1,5 @@
 ## Load Data
-source("2015/Scripts/data_init.R")
+source("2015/Scripts/Perch/data_init.R")
 
 ## -----------------------------------------------------------
 ## Remove stomachs with no diet contents
@@ -126,19 +126,6 @@ perc_comb %<>% group_by(type,species,year,season) %>%
 hist_perc <- bind_rows(hist_perc,perc_comb)
 
 ## -----------------------------------------------------------
-### A helper function for plotting
-## -----------------------------------------------------------
-histPlot <- function(df,taxa_type,seas,xlim,ylim,clr) {
-  tmp <- filter(df,type==taxa_type & species=="Yellow Perch" & season==seas)
-  tmp2 <- filter(df,type==taxa_type & species=="White Perch" & season==seas)
-  plot(type_sum~year,data=tmp,type="l",lwd=2,col=clr,
-       ylim=ylim,xlim=xlim,xaxt="n",yaxt="n",xlab="",ylab="",main="",axes=F)
-  points(type_sum~year,data=tmp,pch=16,cex=1.25)
-  lines(type_sum~year,data=tmp2,lty=2,lwd=2,col="gray70")  
-  points(type_sum~year,data=tmp2,pch=1,cex=1.25)
-}
-
-## -----------------------------------------------------------
 ## Set some constants for plotting
 ## -----------------------------------------------------------
 clr <- "gray35"
@@ -179,7 +166,14 @@ plot.new(); text(0.5,0.6,"Year",cex=2.75)
 ## ---------------------------------------------------
 ## Top-left
 par(mar=c(2.25,5,1,2),xaxs="i",yaxs="i",las=1)
-histPlot(hist_perc,"Zooplankton","Spring",xlmt,ylmt,clr)
+plot(type_sum~year,data=filter(hist_perc,type=="Zooplankton" & species=="Yellow Perch" & season=="Spring"),
+     type="l",lwd=2,col=clr,ylim=ylmt,xlim=xlmt,xaxt="n",yaxt="n",xlab="",ylab="",main="",axes=F)
+points(type_sum~year,data=filter(hist_perc,type=="Zooplankton" & species=="Yellow Perch" & season=="Spring"),
+       pch=16,cex=1.25)
+lines(type_sum~year,data=filter(hist_perc,type=="Zooplankton" & species=="White Perch" & season=="Spring"),
+      lty=2,lwd=2,col="gray55")  
+points(type_sum~year,data=filter(hist_perc,type=="Zooplankton" & species=="White Perch" & season=="Spring"),
+       pch=1,cex=1.25,col="gray55")
 axis(1,year_ticks,labels=F,tcl=-0.35,col="gray55")
 axis(2,freq_ticks,labels=F,tcl=-0.35,col="gray55")
 text(x=2004.4,y=freq_ticks,
@@ -188,7 +182,14 @@ axis(1,year_ticks_2,labels=F,tcl=-0.35,col="gray55")
 
 ## Middle-left
 par(mar=c(2.25,5,1,2),xaxs="i",yaxs="i",las=1)
-histPlot(hist_perc,"Benthic Invertebrates","Spring",xlmt,ylmt,clr)
+plot(type_sum~year,data=filter(hist_perc,type=="Benthic Invertebrates" & species=="Yellow Perch" & season=="Spring"),
+     type="l",lwd=2,col=clr,ylim=ylmt,xlim=xlmt,xaxt="n",yaxt="n",xlab="",ylab="",main="",axes=F)
+points(type_sum~year,data=filter(hist_perc,type=="Benthic Invertebrates" & species=="Yellow Perch" & season=="Spring"),
+       pch=16,cex=1.25)
+lines(type_sum~year,data=filter(hist_perc,type=="Benthic Invertebrates" & species=="White Perch" & season=="Spring"),
+      lty=2,lwd=2,col="gray55")  
+points(type_sum~year,data=filter(hist_perc,type=="Benthic Invertebrates" & species=="White Perch" & season=="Spring"),
+       pch=1,cex=1.25,col="gray55")
 axis(1,year_ticks,labels=F,tcl=-0.35,col="gray55")
 axis(2,freq_ticks,labels=F,tcl=-0.35,col="gray55")
 text(x=2004.4,y=freq_ticks,
@@ -197,7 +198,14 @@ axis(1,year_ticks_2,labels=F,tcl=-0.35,col="gray55")
 
 #Bottom-left
 par(mar=c(2.25,5,1,2),xaxs="i",yaxs="i",las=1)
-histPlot(hist_perc,"Fish","Spring",xlmt,ylmt,clr)
+plot(type_sum~year,data=filter(hist_perc,type=="Fish" & species=="Yellow Perch" & season=="Spring"),
+     type="l",lwd=2,col=clr,ylim=ylmt,xlim=xlmt,xaxt="n",yaxt="n",xlab="",ylab="",main="",axes=F)
+points(type_sum~year,data=filter(hist_perc,type=="Fish" & species=="Yellow Perch" & season=="Spring"),
+       pch=16,cex=1.25)
+lines(type_sum~year,data=filter(hist_perc,type=="Fish" & species=="White Perch" & season=="Spring"),
+      lty=2,lwd=2,col="gray55")  
+points(type_sum~year,data=filter(hist_perc,type=="Fish" & species=="White Perch" & season=="Spring"),
+       pch=1,cex=1.25,col="gray55")
 axis(1,year_ticks,labels=F,tcl=-0.35,col="gray55")
 text(x=year_ticks+0.47,y=-30,
      labels=year_ticks,srt=0,adj=1,xpd=TRUE,cex=1.6)
@@ -208,21 +216,42 @@ axis(1,year_ticks_2,labels=F,tcl=-0.35,col="gray55")
 
 ## Top-right
 par(mar=c(2.25,2,1,5),xaxs="i",yaxs="i",las=1)
-histPlot(hist_perc,"Zooplankton","Fall",xlmt,ylmt,clr)
+plot(type_sum~year,data=filter(hist_perc,type=="Zooplankton" & species=="Yellow Perch" & season=="Fall"),
+     type="l",lwd=2,col=clr,ylim=ylmt,xlim=xlmt,xaxt="n",yaxt="n",xlab="",ylab="",main="",axes=F)
+points(type_sum~year,data=filter(hist_perc,type=="Zooplankton" & species=="Yellow Perch" & season=="Fall"),
+       pch=16,cex=1.25)
+lines(type_sum~year,data=filter(hist_perc,type=="Zooplankton" & species=="White Perch" & season=="Fall"),
+      lty=2,lwd=2,col="gray55")  
+points(type_sum~year,data=filter(hist_perc,type=="Zooplankton" & species=="White Perch" & season=="Fall"),
+       pch=1,cex=1.25,col="gray55")
 axis(1,year_ticks,labels=F,tcl=-0.35,col="gray55")
 axis(2,freq_ticks,labels=F,tcl=-0.35,col="gray55")
 axis(1,year_ticks_2,labels=F,tcl=-0.35,col="gray55")
 
 ## Midlle-right
 par(mar=c(2.25,2,1,5),xaxs="i",yaxs="i",las=1)
-histPlot(hist_perc,"Benthic Invertebrates","Fall",xlmt,ylmt,clr)
+plot(type_sum~year,data=filter(hist_perc,type=="Benthic Invertebrates" & species=="Yellow Perch" & season=="Fall"),
+     type="l",lwd=2,col=clr,ylim=ylmt,xlim=xlmt,xaxt="n",yaxt="n",xlab="",ylab="",main="",axes=F)
+points(type_sum~year,data=filter(hist_perc,type=="Benthic Invertebrates" & species=="Yellow Perch" & season=="Fall"),
+       pch=16,cex=1.25)
+lines(type_sum~year,data=filter(hist_perc,type=="Benthic Invertebrates" & species=="White Perch" & season=="Fall"),
+      lty=2,lwd=2,col="gray55")  
+points(type_sum~year,data=filter(hist_perc,type=="Benthic Invertebrates" & species=="White Perch" & season=="Fall"),
+       pch=1,cex=1.25,col="gray55")
 axis(1,year_ticks,labels=F,tcl=-0.35,col="gray55")
 axis(2,freq_ticks,labels=F,tcl=-0.35,col="gray55")
 axis(1,year_ticks_2,labels=F,tcl=-0.35,col="gray55")
 
 ## Bottom-right
 par(mar=c(2.25,2,1,5),xaxs="i",yaxs="i",las=1)
-histPlot(hist_perc,"Fish","Fall",xlmt,ylmt,clr)
+plot(type_sum~year,data=filter(hist_perc,type=="Fish" & species=="Yellow Perch" & season=="Fall"),
+     type="l",lwd=2,col=clr,ylim=ylmt,xlim=xlmt,xaxt="n",yaxt="n",xlab="",ylab="",main="",axes=F)
+points(type_sum~year,data=filter(hist_perc,type=="Fish" & species=="Yellow Perch" & season=="Fall"),
+       pch=16,cex=1.25)
+lines(type_sum~year,data=filter(hist_perc,type=="Fish" & species=="White Perch" & season=="Fall"),
+      lty=2,lwd=2,col="gray55")  
+points(type_sum~year,data=filter(hist_perc,type=="Fish" & species=="White Perch" & season=="Fall"),
+       pch=1,cex=1.25,col="gray55")
 axis(1,year_ticks,labels=F,tcl=-0.35,col="gray55")
 text(x=year_ticks+0.47,y=-30,
      labels=year_ticks,srt=0,adj=1,xpd=TRUE,cex=1.6)

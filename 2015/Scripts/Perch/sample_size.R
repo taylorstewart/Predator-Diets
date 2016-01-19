@@ -1,5 +1,5 @@
 ## Load Data
-source("2015/Scripts/data_init.R")
+source("2015/Scripts/Perch/data_init.R")
 
 diet_spring_full <- filter(diet_spring,food_item != "Empty")
 diet_fall_full <- filter(diet_fall,food_item != "Empty")

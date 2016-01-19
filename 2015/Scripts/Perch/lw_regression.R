@@ -1,4 +1,4 @@
-source("2015/Scripts/data_init.R")
+source("2015/Scripts/Perch/data_init.R")
 
 spring_lw %<>% mutate(logl=log(tl),
          logw=log(wt))
