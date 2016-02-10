@@ -29,7 +29,7 @@ wp_fall_list <- unique(wp_fall$fid)
 ## -----------------------------------------------------------
 ## Creat list of prey types
 ## -----------------------------------------------------------
-taxa_list <- c("Zooplankton","Benthic Invertebrates","Fish")
+taxa_list <- c("Zooplankton","Benthic Invertebrates","Fish Prey")
 
 ## -----------------------------------------------------------
 ### SPRING
@@ -44,10 +44,14 @@ yp_spring_perc <- as.data.frame(do.call(cbind,lapply(yp_spring_list,function(i) 
 })))
 
 ## Calculate row means
-yp_spring_perc %<>% transform(mean = apply(yp_spring_perc,1,mean))
+yp_spring_perc %<>% transform(mean = apply(yp_spring_perc,1,mean),
+                              sd = apply(yp_spring_perc,1,sd)) %>% 
+  mutate(n=rowSums(yp_spring_perc > 0),
+         se=sd/(sqrt(n)))
 
 ## Add prey names to data frame
 yp_spring_perc %<>% transmute(percent = mean,
+                              se=se,
                               prey_type = taxa_list,
                               species = "Yellow Perch",
                               season = "Spring")
@@ -62,10 +66,14 @@ wp_spring_perc <- as.data.frame(do.call(cbind,lapply(wp_spring_list,function(i) 
 })))
 
 ## Calculate row means
-wp_spring_perc %<>% transform(mean = apply(wp_spring_perc,1,mean))
+wp_spring_perc %<>% transform(mean = apply(wp_spring_perc,1,mean),
+                              sd = apply(wp_spring_perc,1,sd)) %>% 
+  mutate(n=rowSums(wp_spring_perc > 0),
+         se=sd/(sqrt(n)))
 
 ## Add prey names to data frame
 wp_spring_perc %<>% transmute(percent = mean,
+                              se=se,
                               prey_type = taxa_list,
                               species = "White Perch",
                               season = "Spring")
@@ -83,10 +91,14 @@ yp_fall_perc <- as.data.frame(do.call(cbind,lapply(yp_fall_list,function(i) {
 })))
 
 ## Calculate row means
-yp_fall_perc %<>% transform(mean = apply(yp_fall_perc,1,mean))
+yp_fall_perc %<>% transform(mean = apply(yp_fall_perc,1,mean),
+                            sd = apply(yp_fall_perc,1,sd)) %>% 
+  mutate(n=rowSums(yp_fall_perc > 0),
+         se=sd/(sqrt(n)))
 
 ## Add prey names to data frame
 yp_fall_perc %<>% transmute(percent = mean,
+                            se=se,
                             prey_type = taxa_list,
                             species = "Yellow Perch",
                             season = "Fall")
@@ -101,10 +113,14 @@ wp_fall_perc <- as.data.frame(do.call(cbind,lapply(wp_fall_list,function(i) {
 })))
 
 ## Calculate row means
-wp_fall_perc %<>% transform(mean = apply(wp_fall_perc,1,mean))
+wp_fall_perc %<>% transform(mean = apply(wp_fall_perc,1,mean),
+                            sd = apply(wp_fall_perc,1,sd)) %>% 
+  mutate(n=rowSums(wp_fall_perc > 0),
+         se=sd/(sqrt(n)))
 
 ## Add prey names to data frame
 wp_fall_perc %<>% transmute(percent = mean,
+                            se = se,
                             prey_type = taxa_list,
                             species = "White Perch",
                             season = "Fall")
@@ -112,82 +128,62 @@ wp_fall_perc %<>% transmute(percent = mean,
 ## -----------------------------------------------------------
 ## Combine into a final data frame
 ## -----------------------------------------------------------
-perc_comb <- bind_rows(yp_spring_perc,wp_spring_perc,yp_fall_perc,wp_fall_perc)
+perc_comb <- bind_rows(yp_spring_perc,wp_spring_perc,yp_fall_perc,wp_fall_perc) %>% 
+  mutate(prey_type=factor(prey_type,levels = c("Zooplankton","Benthic Invertebrates","Fish Prey"),ordered=TRUE))
 
 ## -----------------------------------------------------------
-## Merge prey type (matching prey taxa).
+## Make plots
 ## -----------------------------------------------------------
-perc_comb %<>% group_by(prey_type,species,season) %>%
-  summarise(type_sum = sum(percent)) %>% ungroup() %>% 
-  mutate(prey_type=factor(prey_type,levels = c("Zooplankton","Benthic Invertebrates","Fish"),ordered=TRUE)) %>% 
-  arrange(prey_type,species,desc(season))
+yp <- ggplot(filter(perc_comb,species=="Yellow Perch"),aes(season,percent,fill=prey_type)) +
+  geom_errorbar(aes(x=season,ymin=0,ymax=percent+se),
+                width=0.25,
+                position = position_dodge(.9)) +
+  geom_bar(stat="identity",position="dodge") +
+  scale_fill_grey(start=0.2,end=0.8) +
+  scale_y_continuous(limits = c(0,80),expand=c(0,0)) +
+  labs(title="Yellow Perch") +
+  theme(axis.text.x=element_text(size=22,vjust=0),axis.text.y=element_text(size=24,hjust=1),
+        axis.line=element_line(),axis.title=element_blank(),axis.ticks.length=unit(1.75,'mm'),
+        legend.position="bottom",legend.title=element_blank(),legend.text=element_text(size=24),
+        panel.background=element_blank(),axis.title=element_blank(),plot.title=element_text(size=24),
+        plot.margin=unit(c(2,2,2,10),"mm"))
+
+wp <- ggplot(filter(perc_comb,species=="White Perch"),aes(season,percent,fill=prey_type)) +
+  geom_errorbar(aes(x=season,ymin=0,ymax=percent+se),
+                width=0.25,
+                position = position_dodge(.9)) +
+  geom_bar(stat="identity",position="dodge") +
+  scale_fill_grey(start=0.2,end=0.8) +
+  scale_y_continuous(limits = c(0,80),expand=c(0,0)) +
+  labs(title="White Perch") +
+  theme(axis.text.x=element_text(size=22,vjust=0),axis.text.y=element_text(size=24,hjust=1),
+        axis.line=element_line(),axis.title=element_blank(),axis.ticks.length=unit(1.75,'mm'),
+        legend.position="bottom",legend.title=element_blank(),legend.text=element_text(size=24),
+        panel.background=element_blank(),plot.title=element_text(size=24),
+        plot.margin=unit(c(2,2,2,10),"mm"))
 
 ## -----------------------------------------------------------
-## Create a matrix for plotting
+## Create common legend
 ## -----------------------------------------------------------
-yp_table <- data.frame(Spring = c(as.vector(
-  filter(perc_comb,species=="Yellow Perch" & season=="Spring")$type_sum)),
-  Fall = c(as.vector(
-    filter(perc_comb,species=="Yellow Perch" & season=="Fall")$type_sum)))
-yp_table <- do.call(cbind,yp_table)
-
-wp_table <- data.frame(Spring = c(as.vector(
-  filter(perc_comb,species=="White Perch" & season=="Spring")$type_sum)),
-  Fall = c(as.vector(
-    filter(perc_comb,species=="White Perch" & season=="Fall")$type_sum)))
-wp_table <- do.call(cbind,wp_table)
+legend = gtable_filter(ggplot_gtable(ggplot_build(yp)), "guide-box") 
 
 ## -----------------------------------------------------------
-## Set some constants for plotting
+## Save the plot as a figure (comment out line 186 and 226 until you are ready to save)
 ## -----------------------------------------------------------
-clr <- "gray35"
-## number of rows and cols of actual plots
-nrow <- 2
-ncol <- 1
-## sets the base width for each plot
-basew <- 5
-baseh <- basew*0.6
+png("2015/Figures/prey_type_bar.PNG",width=10,height=12,units="in",family="Times",res=300)
 
 ## -----------------------------------------------------------
-## Save the plot as a figure (comment out line 144 and 182 until you are ready to save)
+## Put plots into a matrix
 ## -----------------------------------------------------------
-png("2015/Figures/prey_type_bar.PNG",width=5,height=7,units="in",family="Times",res=300)
+grid.arrange(arrangeGrob(yp + theme(legend.position="none"),
+                         wp + theme(legend.position="none"),
+                         ncol=1,
+                         nrow=2,
+                         left=textGrob("Diet Composition (% Dry Weight)",rot=90,gp=gpar(fontsize=32))),
+             legend,
+             heights=c(8,1))
 
 ## -----------------------------------------------------------
-## Make a base plot
-## -----------------------------------------------------------
-## make the layout
-layout(rbind(cbind(rep(1,nrow),
-                   matrix(3:4,nrow=nrow,byrow=FALSE)),
-             c(0,rep(2,ncol))),
-       widths=c(1,basew,rep(basew,ncol-1),1),
-       heights=c(rep(baseh,nrow-1),baseh,1),
-       respect=TRUE)
-## put on some axis labels
-par(mar=c(0,0,0,0))
-plot.new(); text(0.5,0.5,"Diet Composition (% dry mass)",srt=90,cex=2.1)
-plot.new(); legend("bottom",c("Zooplankton","Benthic Macroinvertebrates","Fish"),
-                   fill=c("gray80","gray45","black"),cex=1.4)
-
-## ---------------------------------------------------
-## Put on individual plots
-## ---------------------------------------------------
-## Top
-par(mar=c(3,1.5,2,1.5),xaxs="i",yaxs="i",las=1)
-barplot(yp_table,beside=TRUE,xlim=c(0.5,8.5),axes=F,axisnames=F,legend.text = rownames(yp_table),ylim=c(0,80), 
-        col=c("gray80","gray45","black"),args.legend=list(x = 10, bty="y"))
-axis(1,c(0.5,4.5,8.5),labels=F,tcl=-0.3,col="gray55")
-axis(2,seq(0,100,20),tcl=-0.6,col="gray55",cex.axis=1.75)
-
-## Bottom
-par(mar=c(3,1.5,2,1.5),xaxs="i",yaxs="i",las=1)
-barplot(wp_table,beside=TRUE,xlim=c(0.5,8.5),cex.names=2,axes=F,ylim=c(0,80),
-        col=c("gray80","gray45","black"))
-axis(1,c(0.5,4.5,8.5),labels=F,tcl=-0.3,col="gray55")
-axis(2,seq(0,100,20),tcl=-0.6,col="gray55",cex.axis=1.75)
-
-## -----------------------------------------------------------
-## Close the device to make the actual PDF file
+## Close the device to make the actual PNG file
 ## -----------------------------------------------------------
 dev.off()
-
