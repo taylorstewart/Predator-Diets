@@ -55,24 +55,70 @@ wp_fall_empty_len <- left_join(wp_fall_empty,fall_lw) %>%
 ## -----------------------------------------------------------
 lw_comb <- bind_rows(yp_spring_full_len,wp_spring_full_len,yp_fall_full_len,
                     wp_fall_full_len,yp_spring_empty_len,wp_spring_empty_len,
-                    yp_fall_empty_len,wp_fall_empty_len)
+                    yp_fall_empty_len,wp_fall_empty_len) %>% 
+  mutate(contents=factor(contents,levels=c("Y","N"),ordered=TRUE),
+         species=factor(species,levels=c("Yellow Perch","White Perch"),ordered=TRUE),
+         season=factor(season,levels=c("Spring","Autumn"),ordered=TRUE))
 
 ## -----------------------------------------------------------
-## Set some constants for plotting
+## Make plots
 ## -----------------------------------------------------------
-clr <- "gray35"
-brks <- seq(140,310,10)
-xlmt <- range(brks)
-len_ticks <- seq(150,300,50)
-freq_ticks <- seq(0,25,5)
-prob <- TRUE
-ylmt <- range(freq_ticks)
-# number of rows and cols of actual plots
-nrow <- 2
-ncol <- 2
-# sets the base width for each plot
-basew <- 5.0
-baseh <- basew*0.8
+yp_spring <- ggplot(filter(lw_comb,species=="Yellow Perch",season=="Spring"),aes(tl,fill=contents)) +
+  geom_histogram(binwidth=10,col=I("black")) +
+  scale_x_continuous(limits=c(140,310),expand=c(0,0)) +
+  scale_y_continuous(limits=c(0,25),expand=c(0,0)) +
+  scale_fill_grey(start=0.7,end=0.3,
+                  labels=c("Diet Contents Observed", "Empty")) +
+  labs(title='Spring',x='',y='\nYellow Perch\n') +
+  theme(axis.text.x=element_blank(),axis.text.y=element_text(size=19),
+        axis.line=element_line(),axis.title=element_text(size=20),axis.ticks.length=unit(1.75,'mm'),
+        legend.position="bottom",legend.title=element_blank(),legend.text=element_text(size=18),
+        panel.background=element_blank(),strip.text=element_blank(),strip.background=element_blank(),
+        plot.title=element_text(size=20),plot.margin=unit(c(5,0,3,0),"mm"))
+
+wp_spring <- ggplot(filter(lw_comb,species=="White Perch",season=="Spring"),aes(tl,fill=contents)) +
+  geom_histogram(binwidth=10,col=I("black")) +
+  scale_x_continuous(limits=c(140,310),expand=c(0,0)) +
+  scale_y_continuous(limits=c(0,25),expand=c(0,0)) +
+  scale_fill_grey(start=0.7,end=0.3,
+                  labels=c("Diet Contents Observed", "Empty")) +
+  labs(title='',x='',y='\nWhite Perch\n') +
+  theme(axis.text.x=element_text(size=19),axis.text.y=element_text(size=19),
+        axis.line=element_line(),axis.title=element_text(size=20),axis.ticks.length=unit(1.75,'mm'),
+        legend.position="bottom",legend.title=element_blank(),legend.text=element_text(size=18),
+        panel.background=element_blank(),strip.text=element_blank(),strip.background=element_blank(),
+        plot.title=element_text(size=20),plot.margin=unit(c(0,0,3,0),"mm"))
+
+yp_fall <- ggplot(filter(lw_comb,species=="Yellow Perch",season=="Autumn"),aes(tl,fill=contents)) +
+  geom_histogram(binwidth=10,col=I("black")) +
+  scale_x_continuous(limits=c(140,310),expand=c(0,0)) +
+  scale_y_continuous(limits=c(0,25),expand=c(0,0)) +
+  scale_fill_grey(start=0.7,end=0.3,
+                  labels=c("Diet Contents Observed", "Empty")) +
+  labs(title='Autumn',x='',y='') +
+  theme(axis.text.x=element_blank(),axis.text.y=element_blank(),
+        axis.line=element_line(),axis.title=element_text(size=20),axis.ticks.length=unit(1.75,'mm'),
+        legend.position="bottom",legend.title=element_blank(),legend.text=element_text(size=18),
+        panel.background=element_blank(),strip.text=element_blank(),strip.background=element_blank(),
+        plot.title=element_text(size=20),plot.margin=unit(c(5,15,3,0),"mm"))
+
+wp_fall <- ggplot(filter(lw_comb,species=="White Perch",season=="Autumn"),aes(tl,fill=contents)) +
+  geom_histogram(binwidth=10,col=I("black")) +
+  scale_x_continuous(limits=c(140,310),expand=c(0,0)) +
+  scale_y_continuous(limits=c(0,25),expand=c(0,0)) +
+  scale_fill_grey(start=0.7,end=0.3,
+                  labels=c("Diet Contents Observed", "Empty")) +
+  labs(title='',x='',y='') +
+  theme(axis.text.x=element_text(size=19),axis.text.y=element_blank(),
+        axis.line=element_line(),axis.title=element_text(size=20),axis.ticks.length=unit(1.75,'mm'),
+        legend.position="bottom",legend.title=element_blank(),legend.text=element_text(size=18),
+        panel.background=element_blank(),strip.text=element_blank(),strip.background=element_blank(),
+        plot.title=element_text(size=20),plot.margin=unit(c(0,15,3,0),"mm"))
+
+## -----------------------------------------------------------
+## Create common legend
+## -----------------------------------------------------------
+legend = gtable_filter(ggplot_gtable(ggplot_build(yp_spring)), "guide-box") 
 
 ## -----------------------------------------------------------
 ## Save the plot as a figure (comment out line 144 and 182 until you are ready to save)
@@ -80,68 +126,18 @@ baseh <- basew*0.8
 png("2015/Figures/length_distribution.PNG",width=11,height=9,units="in",family="Times",res=300)
 
 ## -----------------------------------------------------------
-## Make a base plots
+## Put plots into a matrix
 ## -----------------------------------------------------------
-# make the layout
-layout(rbind(cbind(rep(1,nrow),
-                    matrix(4:7,nrow=nrow,byrow=FALSE)),
-              c(0,rep(2,ncol)),
-              c(0,rep(3,ncol))),
-        widths=c(1,basew,rep(basew,ncol-1),1),
-        heights=c(rep(baseh,nrow-1),baseh,1),
-        respect=TRUE)
-# put on some axis labels
-par(mar=c(0,0,0,0))
-plot.new(); text(0.2,0.5,"Frequency",srt=90,cex=3)
-plot.new(); text(0.5,0.45,"Length Group (mm)",cex=2.75)
-plot.new(); legend("top",c("Diet Contents Observed","Empty"),fill=c("gray80",clr),cex=2)
-
-## ---------------------------------------------------
-## Put on individual histograms
-## ---------------------------------------------------
-  ## Top-left
-  par(mar=c(2,2.5,2.5,2.75),las=1,xaxs="i",yaxs="i")
-  plot(hist(filter(lw_comb,season=="Spring" & species=="Yellow Perch")$tl,breaks=brks,plot=FALSE,right=FALSE)
-       ,xlim=xlmt,ylim=ylmt,xaxt="n",yaxt="n",xlab="",ylab="",main="",col=clr)
-  plot(hist(filter(lw_comb,season=="Spring" & species=="Yellow Perch" & contents=="Y")$tl,breaks=brks,plot=FALSE,right=FALSE),
-       col="gray80",add=TRUE)
-  axis(1,len_ticks,labels=NA,tcl=-0.4,col="gray55")
-  axis(2,freq_ticks,labels=TRUE,tcl=-0.4,col="gray55",cex.axis=2.25)
-  axis(1,brks,labels=NA,tcl=-0.4,col="gray55")
-
-  ## Bottom-left
-  par(mar=c(2.5,2.5,2,2.75),las=1,xaxs="i",yaxs="i")
-  plot(hist(filter(lw_comb,season=="Spring" & species=="White Perch")$tl,breaks=brks,plot=FALSE,right=FALSE)
-       ,xlim=xlmt,ylim=ylmt,xaxt="n",yaxt="n",xlab="",ylab="",main="",col=clr)
-  plot(hist(filter(lw_comb,season=="Spring" & species=="White Perch" & contents=="Y")$tl,breaks=brks,plot=FALSE,right=FALSE),
-       col="gray80",add=TRUE)
-  axis(1,len_ticks,labels=NA,tcl=0,col="gray55")
-  text(x=len_ticks+9.5,y=-2,
-       labels=len_ticks,srt=0,adj=1,xpd=TRUE,cex=2.25)
-  axis(2,freq_ticks,labels=TRUE,tcl=-0.4,col="gray55",cex.axis=2.25)
-  axis(1,brks,labels=NA,tcl=-0.4,col="gray55")
-
-  ## Top-right
-  par(mar=c(2,2.25,2.5,2.5),las=1,xaxs="i",yaxs="i")
-  plot(hist(filter(lw_comb,season=="Autumn" & species=="Yellow Perch")$tl,breaks=brks,plot=FALSE,right=FALSE)
-       ,xlim=xlmt,ylim=ylmt,xaxt="n",yaxt="n",xlab="",ylab="",main="",col=clr)
-  plot(hist(filter(lw_comb,season=="Autumn" & species=="Yellow Perch" & contents=="Y")$tl,breaks=brks,plot=FALSE,right=FALSE),
-       col="gray80",add=TRUE)
-  axis(1,len_ticks,labels=NA,tcl=-0.4,col="gray55")
-  axis(2,freq_ticks,labels=NA,tcl=-0.4,col="gray55")
-  axis(1,brks,labels=NA,tcl=-0.4,col="gray55")
-
-  ## Bottom-right
-  par(mar=c(2.5,2.25,2,2.5),las=1,xaxs="i",yaxs="i")
-  plot(hist(filter(lw_comb,season=="Autumn" & species=="White Perch")$tl,breaks=brks,plot=FALSE,right=FALSE)
-       ,xlim=xlmt,ylim=ylmt,xaxt="n",yaxt="n",xlab="",ylab="",main="",col=clr)
-  plot(hist(filter(lw_comb,season=="Autumn" & species=="White Perch" & contents=="Y")$tl,breaks=brks,plot=FALSE,right=FALSE),
-       col="gray80",add=TRUE)
-  axis(1,len_ticks,labels=NA,tcl=-0.4,col="gray55")
-  text(x=len_ticks+9.5,y=-2,
-       labels=len_ticks,srt=0,adj=1,xpd=TRUE,cex=2.25)
-  axis(2,freq_ticks,labels=NA,tcl=-0.4,col="gray55")
-  axis(1,brks,labels=NA,tcl=-0.4,col="gray55")
+grid.arrange(arrangeGrob(yp_spring + theme(legend.position="none"),
+                         yp_fall + theme(legend.position="none"),
+                         wp_spring + theme(legend.position="none"),
+                         wp_fall + theme(legend.position="none"),
+                         ncol=2,
+                         nrow=2,
+                         left=textGrob("Frequency",y=unit(110,'mm'),rot=90,gp=gpar(fontsize=30)),
+                         bottom=textGrob("Length Group (mm)",gp=gpar(fontsize=30))),
+             legend,
+             heights=c(8,1))
 
 ## -----------------------------------------------------------
 ## Close the device to make the actual PNG file
