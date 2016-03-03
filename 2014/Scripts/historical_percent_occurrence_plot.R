@@ -39,7 +39,7 @@ taxa_list <- c("Zooplankton","Benthic Invertebrates","Fish")
 ##### YELLOW PERCH #####
 ## Calculate the number of fish found with each prey taxa
 yp_spring_n <- as.data.frame(do.call(rbind,lapply(taxa_list,function(i) {
-  yp_spring %<>% filter(type == i)
+  yp_spring %<>% filter(type == i) %>% distinct(fid)
   nrow(yp_spring)
 })))
 
@@ -59,7 +59,7 @@ yp_spring_perc %<>% mutate(percent = V1,
 ##### WHITE PERCH #####
 ## Calculate the number of fish found with each prey taxa
 wp_spring_n <- as.data.frame(do.call(rbind,lapply(taxa_list,function(i) {
-  wp_spring %<>% filter(type == i)
+  wp_spring %<>% filter(type == i) %>% distinct(fid)
   nrow(wp_spring)
 })))
 
@@ -82,7 +82,7 @@ wp_spring_perc %<>% mutate(percent = V1,
 ##### YELLOW PERCH #####
 ## Calculate the number of fish found with each prey taxa
 yp_fall_n <- as.data.frame(do.call(rbind,lapply(taxa_list,function(i) {
-  yp_fall %<>% filter(type == i)
+  yp_fall %<>% filter(type == i) %>% distinct(fid)
   nrow(yp_fall)
 })))
 
@@ -102,7 +102,7 @@ yp_fall_perc %<>% mutate(percent = V1,
 ##### WHITE PERCH #####
 ## Calculate the number of fish found with each prey taxa
 wp_fall_n <- as.data.frame(do.call(rbind,lapply(taxa_list,function(i) {
-  wp_fall %<>% filter(type == i)
+  wp_fall %<>% filter(type == i) %>% distinct(fid)
   nrow(wp_fall)
 })))
 
@@ -122,12 +122,6 @@ wp_fall_perc %<>% mutate(percent = V1,
 ## Combine into a final data frame
 ## -----------------------------------------------------------
 perc_comb <- data.frame(rbind(yp_spring_perc,wp_spring_perc,yp_fall_perc,wp_fall_perc))
-
-## -----------------------------------------------------------
-## Merge prey type (matching prey taxa).
-## -----------------------------------------------------------
-perc_comb %<>% group_by(type,species,year,season) %>%
-  summarise(type_sum = sum(percent))
 
 ## -----------------------------------------------------------
 ## Combine historical data with current data.

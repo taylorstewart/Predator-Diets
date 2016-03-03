@@ -10,6 +10,9 @@ library(dplyr)     # manipulating data
 library(magrittr)  # for %<>%
 library(readxl)    # reading data
 library(ggplot2)   # for visualizations
+library(grid)      # historical plot matrix text
+library(gridExtra) # historical plot matrix layout
+library(gtable)    # historical plot matrix legend
 
 ## ===========================================================
 ## Load Data

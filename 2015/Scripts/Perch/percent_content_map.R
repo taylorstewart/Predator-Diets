@@ -85,36 +85,107 @@ final_wp <- filter(final,species=="White Perch") %>%
 final_comb <- bind_rows(final_yp,final_wp)
 
 ## -----------------------------------------------------------
-## Save the plot as a figure (comment out line 88 and 118 until you are ready to save)
+### Create each individual plot
 ## -----------------------------------------------------------
-png("2015/Figures/percent_content_map.PNG",width=7.5,height=4.25,units="in",family="Times",res=300)
-
-## -----------------------------------------------------------
-### Create plot
-## -----------------------------------------------------------
-## Save plot as a list object
-ggplot(data=filter(wb_shore,piece=="1" & group=="3.1"),aes(long,lat)) +
+yp_spring <- ggplot(data=filter(wb_shore,piece=="1" & group=="3.1"),aes(long,lat)) +
   geom_polygon(fill="white",colour="black") +
   geom_polygon(data=filter(wb_shore,piece=="2"),aes(long,lat),fill="white",colour="black") +
   geom_polygon(data=filter(wb_shore,piece=="3"),aes(long,lat),fill="white",colour="black") +
   geom_polygon(data=filter(wb_shore,piece=="4"),aes(long,lat),fill="white",colour="black") +
   geom_polygon(data=filter(wb_shore,piece=="5"),aes(long,lat),fill="white",colour="black") +
   geom_polygon(data=filter(wb_shore,piece=="6"),aes(long,lat),fill="white",colour="black") +
-  geom_point(data=filter(final_comb,season=="Autumn"),aes(long_st,lat_st,size=Percent*0.9),fill="gray70",
-             colour="black",pch=21,stroke=0.8) +
-  geom_point(data=filter(final_comb,season=="Spring"),aes(long_st,lat_st,size=Percent*0.9),fill="Black",
-             colour="black",pch=21,stroke=0.8) +
+  geom_point(data=filter(final_comb,species=="Yellow Perch",season=="Spring"),aes(long_st,lat_st,size=Percent*0.9),
+             fill="gray70",colour="black",pch=21,stroke=0.8) +
   scale_size_continuous(name="Percent",limits=c(0,100),breaks=c(0,20,40,60,80,100)) +
   xlim(-83.514,-82.12) +
-  coord_fixed(ratio = 1.2) +
-  facet_wrap(~species+season) +
-  theme(axis.ticks=element_blank(),axis.title=element_blank(),axis.text=element_blank(),
+  coord_fixed(ratio = 1.3) +
+  labs(title='Spring',x='',y='Yellow Perch') +
+  theme(axis.ticks=element_blank(),axis.title=element_text(size=12),axis.text=element_blank(),
         panel.grid.major=element_blank(),panel.grid.minor=element_blank(),
         panel.background=element_blank(),strip.background=element_blank(),
-        strip.text.x=element_blank(),legend.key=element_rect(fill="white"),
-        legend.title=element_text(size=10),legend.background=element_rect(colour="black",fill="white"))
+        strip.text=element_text(size=10),legend.background=element_rect(colour="black",fill="white"),
+        plot.title=element_text(size=11))
+
+wp_spring <- ggplot(data=filter(wb_shore,piece=="1" & group=="3.1"),aes(long,lat)) +
+  geom_polygon(fill="white",colour="black") +
+  geom_polygon(data=filter(wb_shore,piece=="2"),aes(long,lat),fill="white",colour="black") +
+  geom_polygon(data=filter(wb_shore,piece=="3"),aes(long,lat),fill="white",colour="black") +
+  geom_polygon(data=filter(wb_shore,piece=="4"),aes(long,lat),fill="white",colour="black") +
+  geom_polygon(data=filter(wb_shore,piece=="5"),aes(long,lat),fill="white",colour="black") +
+  geom_polygon(data=filter(wb_shore,piece=="6"),aes(long,lat),fill="white",colour="black") +
+  geom_point(data=filter(final_comb,species=="White Perch",season=="Spring"),aes(long_st,lat_st,size=Percent*0.9),
+             fill="gray70",colour="black",pch=21,stroke=0.8) +
+  scale_size_continuous(name="Percent",limits=c(0,100),breaks=c(0,20,40,60,80,100)) +
+  xlim(-83.514,-82.12) +
+  coord_fixed(ratio = 1.3) +
+  labs(title='',x='',y='White Perch') +
+  theme(axis.ticks=element_blank(),axis.title=element_text(size=12),axis.text=element_blank(),
+        panel.grid.major=element_blank(),panel.grid.minor=element_blank(),
+        panel.background=element_blank(),strip.background=element_blank(),
+        strip.text=element_text(size=10),legend.background=element_rect(colour="black",fill="white"),
+        plot.title=element_text(size=11))
+
+yp_fall <- ggplot(data=filter(wb_shore,piece=="1" & group=="3.1"),aes(long,lat)) +
+  geom_polygon(fill="white",colour="black") +
+  geom_polygon(data=filter(wb_shore,piece=="2"),aes(long,lat),fill="white",colour="black") +
+  geom_polygon(data=filter(wb_shore,piece=="3"),aes(long,lat),fill="white",colour="black") +
+  geom_polygon(data=filter(wb_shore,piece=="4"),aes(long,lat),fill="white",colour="black") +
+  geom_polygon(data=filter(wb_shore,piece=="5"),aes(long,lat),fill="white",colour="black") +
+  geom_polygon(data=filter(wb_shore,piece=="6"),aes(long,lat),fill="white",colour="black") +
+  geom_point(data=filter(final_comb,species=="Yellow Perch",season=="Autumn"),aes(long_st,lat_st,size=Percent*0.9),
+             fill="gray70",colour="black",pch=21,stroke=0.8) +
+  scale_size_continuous(name="Percent",limits=c(0,100),breaks=c(0,20,40,60,80,100)) +
+  xlim(-83.514,-82.12) +
+  coord_fixed(ratio = 1.3) +
+  labs(title='Autumn',x='',y='') +
+  theme(axis.ticks=element_blank(),axis.title=element_text(size=12),axis.text=element_blank(),
+        panel.grid.major=element_blank(),panel.grid.minor=element_blank(),
+        panel.background=element_blank(),legend.key=element_rect(fill="white"),
+        legend.title=element_text(size=10),legend.background=element_rect(colour="black",fill="white"),
+        plot.title=element_text(size=11))
+
+wp_fall <- ggplot(data=filter(wb_shore,piece=="1" & group=="3.1"),aes(long,lat)) +
+  geom_polygon(fill="white",colour="black") +
+  geom_polygon(data=filter(wb_shore,piece=="2"),aes(long,lat),fill="white",colour="black") +
+  geom_polygon(data=filter(wb_shore,piece=="3"),aes(long,lat),fill="white",colour="black") +
+  geom_polygon(data=filter(wb_shore,piece=="4"),aes(long,lat),fill="white",colour="black") +
+  geom_polygon(data=filter(wb_shore,piece=="5"),aes(long,lat),fill="white",colour="black") +
+  geom_polygon(data=filter(wb_shore,piece=="6"),aes(long,lat),fill="white",colour="black") +
+  geom_point(data=filter(final_comb,species=="White Perch",season=="Autumn"),aes(long_st,lat_st,size=Percent*0.9),
+             fill="gray70",colour="black",pch=21,stroke=0.8) +
+  scale_size_continuous(name="Percent",limits=c(0,100),breaks=c(0,20,40,60,80,100)) +
+  xlim(-83.514,-82.12) +
+  coord_fixed(ratio = 1.3) +
+  labs(title='',x='',y='') +
+  theme(axis.ticks=element_blank(),axis.title=element_text(size=12),axis.text=element_blank(),
+        panel.grid.major=element_blank(),panel.grid.minor=element_blank(),
+        panel.background=element_blank(),legend.key=element_rect(fill="white"),
+        legend.title=element_text(size=10),legend.background=element_rect(colour="black",fill="white"),
+        plot.title=element_text(size=11))
 
 ## -----------------------------------------------------------
-## Close the device to make the actual PDF file
+## Create common legend
+## -----------------------------------------------------------
+legend = gtable_filter(ggplot_gtable(ggplot_build(yp_spring)), "guide-box") 
+
+## -----------------------------------------------------------
+## Save the plot as a figure (comment out line 88 and 118 until you are ready to save)
+## -----------------------------------------------------------
+png("2015/Figures/percent_content_map.PNG",width=8,height=5.5,units="in",family="Times",res=300)
+
+## -----------------------------------------------------------
+## Put plots into a matrix
+## -----------------------------------------------------------
+grid.arrange(arrangeGrob(yp_spring + theme(legend.position="none"),
+                         yp_fall + theme(legend.position="none"),
+                         wp_spring + theme(legend.position="none"),
+                         wp_fall + theme(legend.position="none"),
+                         ncol=2,
+                         nrow=2),
+             legend,
+             widths=c(6,1))
+
+## -----------------------------------------------------------
+## Close the device to make the actual PNG file
 ## -----------------------------------------------------------
 dev.off()

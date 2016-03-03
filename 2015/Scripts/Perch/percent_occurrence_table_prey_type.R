@@ -8,6 +8,13 @@ diet_spring %<>% filter(food_item != "Empty")
 diet_fall %<>% filter(food_item != "Empty")
 
 ## -----------------------------------------------------------
+## Merge prey type (matching prey taxa)
+## -----------------------------------------------------------
+diet_spring %<>% left_join(prey_type)
+diet_fall %<>% left_join(prey_type)
+# Check for NA's in the new prey_type variable (NA = typos, inconsistency between prey names, etc.)
+
+## -----------------------------------------------------------
 ## Filter into each species
 ## -----------------------------------------------------------
 yp_spring <- filter(diet_spring,species=="Yellow Perch")
@@ -16,49 +23,49 @@ yp_fall <- filter(diet_fall,species=="Yellow Perch")
 wp_fall <- filter(diet_fall,species=="White Perch")
 
 ## -----------------------------------------------------------
-## Creat lists of prey types found for both species and season
+## Creat list of prey types
 ## -----------------------------------------------------------
-yp_spring_list <- unique(yp_spring$food_item)
-wp_spring_list <- unique(wp_spring$food_item)
-yp_fall_list <- unique(yp_fall$food_item)
-wp_fall_list <- unique(wp_fall$food_item)
+taxa_list <- c("Zooplankton","Benthic Invertebrates","Fish")
 
 ## -----------------------------------------------------------
-### SPRING (Yellow Perch and White Perch)
+### SPRING
 ## -----------------------------------------------------------
 ##### YELLOW PERCH #####
 ## Calculate the number of fish found with each prey taxa
-yp_spring_n <- as.data.frame(do.call(rbind,lapply(yp_spring_list,function(i) {
-  yp_spring %<>% filter(food_item == i) %>% distinct(fid)
+yp_spring_n <- as.data.frame(do.call(rbind,lapply(taxa_list,function(i) {
+  yp_spring %<>% filter(type == i) %>% distinct(fid)
   nrow(yp_spring)
 })))
 
 ## Calculate the frequency of occurency (percent) for each prey taxa
-yp_spring_freq <- as.data.frame(do.call(rbind,lapply(1:nrow(yp_spring_n),function(j) {
+yp_spring_perc <- as.data.frame(do.call(rbind,lapply(1:nrow(yp_spring_n),function(j) {
   round(as.numeric(((yp_spring_n[j,1])/length(unique(yp_spring$fid)))*100),1)
 })))
-## Add prey names to data frame
-yp_spring_freq %<>% transmute(prey_type = yp_spring_list,
-                              percent_occur = V1,
+
+## Add prey names, fish species, and season to data frame
+yp_spring_perc %<>% transmute(type = taxa_list,
+                              percent = V1,
                               species = "Yellow Perch",
+                              year = 2015,
                               season = "Spring")
 
 ##### WHITE PERCH #####
 ## Calculate the number of fish found with each prey taxa
-wp_spring_n <- as.data.frame(do.call(rbind,lapply(wp_spring_list,function(i) {
-  wp_spring %<>% filter(food_item == i) %>% distinct(fid)
+wp_spring_n <- as.data.frame(do.call(rbind,lapply(taxa_list,function(i) {
+  wp_spring %<>% filter(type == i) %>% distinct(fid)
   nrow(wp_spring)
 })))
 
 ## Calculate the frequency of occurency (percent) for each prey taxa
-wp_spring_freq <- as.data.frame(do.call(rbind,lapply(1:nrow(wp_spring_n),function(j) {
+wp_spring_perc <- as.data.frame(do.call(rbind,lapply(1:nrow(wp_spring_n),function(j) {
   round(as.numeric(((wp_spring_n[j,1])/length(unique(wp_spring$fid)))*100),1)
 })))
 
 ## Add prey names, fish species, and season to data frame
-wp_spring_freq %<>% transmute(prey_type = wp_spring_list,
-                              percent_occur = V1,
+wp_spring_perc %<>% transmute(type = taxa_list,
+                              percent = V1,
                               species = "White Perch",
+                              year = 2015,
                               season = "Spring")
 
 ## -----------------------------------------------------------
@@ -66,49 +73,44 @@ wp_spring_freq %<>% transmute(prey_type = wp_spring_list,
 ## -----------------------------------------------------------
 ##### YELLOW PERCH #####
 ## Calculate the number of fish found with each prey taxa
-yp_fall_n <- as.data.frame(do.call(rbind,lapply(yp_fall_list,function(i) {
-  yp_fall %<>% filter(food_item == i) %>% distinct(fid)
+yp_fall_n <- as.data.frame(do.call(rbind,lapply(taxa_list,function(i) {
+  yp_fall %<>% filter(type == i) %>% distinct(fid)
   nrow(yp_fall)
 })))
 
 ## Calculate the frequency of occurency (percent) for each prey taxa
-yp_fall_freq <- as.data.frame(do.call(rbind,lapply(1:nrow(yp_fall_n),function(j) {
+yp_fall_perc <- as.data.frame(do.call(rbind,lapply(1:nrow(yp_fall_n),function(j) {
   round(as.numeric(((yp_fall_n[j,1])/length(unique(yp_fall$fid)))*100),1)
 })))
 
 ## Add prey names, fish species, and season to data frame
-yp_fall_freq %<>%  transmute(prey_type = yp_fall_list,
-                             percent_occur = V1,
-                             species = "Yellow Perch",
-                             season = "Fall")
+yp_fall_perc %<>% transmute(type = taxa_list,
+                            percent = V1,
+                            species = "Yellow Perch",
+                            year = 2015,
+                            season = "Fall")
 
 ##### WHITE PERCH #####
 ## Calculate the number of fish found with each prey taxa
-wp_fall_n <- as.data.frame(do.call(rbind,lapply(wp_fall_list,function(i) {
-  wp_fall %<>% filter(food_item == i) %>% distinct(fid)
+wp_fall_n <- as.data.frame(do.call(rbind,lapply(taxa_list,function(i) {
+  wp_fall %<>% filter(type == i) %>% distinct(fid)
   nrow(wp_fall)
 })))
 
 ## Calculate the frequency of occurency (percent) for each prey taxa
-wp_fall_freq <- as.data.frame(do.call(rbind,lapply(1:nrow(wp_fall_n),function(j) {
+wp_fall_perc <- as.data.frame(do.call(rbind,lapply(1:nrow(wp_fall_n),function(j) {
   round(as.numeric(((wp_fall_n[j,1])/length(unique(wp_fall$fid)))*100),1)
 })))
+
 ## Add prey names, fish species, and season to data frame
-wp_fall_freq %<>% transmute(prey_type = wp_fall_list,
-                            percent_occur = V1,
+wp_fall_perc %<>% transmute(type = taxa_list,
+                            percent = V1,
                             species = "White Perch",
+                            year = 2015,
                             season = "Fall")
 
 ## -----------------------------------------------------------
 ## Combine into a final data frame
 ## -----------------------------------------------------------
-freq_comb <- bind_rows(yp_spring_freq,wp_spring_freq,yp_fall_freq,wp_fall_freq)
-
-## -----------------------------------------------------------
-## Save table data into Excel spreadsheet
-## -----------------------------------------------------------
-library(XLConnect)
-wb <- loadWorkbook("2015/Data/WB_Percent_Occurrence_Table.xlsx",create=T)
-createSheet(wb,name="Table")
-writeWorksheet(wb,data=as.data.frame(freq_comb),sheet="Table",startRow=1,startCol=1,header=TRUE)
-saveWorkbook(wb)
+perc_comb <- bind_rows(yp_spring_perc,wp_spring_perc,yp_fall_perc,wp_fall_perc)
+perc_comb
